@@ -146,9 +146,9 @@ Six：命令模式--向某些对象发送请求，但并不知道请求的接受
 		}
 	}
 	var refreshCommand = RefreshCommand(eventBar);
-	setCommand(btn, refreshCommand)//发布命令，
+	setCommand(btn, refreshCommand)//发布命令
 	
-	
+Seven：组合模式--组合模式将对象组合成属性结构，以表示“部分-整体”的层次结构。
 	
 	
 	
