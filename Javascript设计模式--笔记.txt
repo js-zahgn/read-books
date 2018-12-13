@@ -82,18 +82,15 @@ Four: 迭代器模式--指提供一种方法顺序访问一个聚合对象中的
 Five：发布-订阅模式(观察者模式)--定义对象间的一种一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都将得到通知。
 	dom.addEventListener('eventName',fn)// JS中的发布-订阅模式
 	var Event = (function(){
-		var clientList = {},
-			listen,
-			trigger,
-			remove;
+		var clientList = {};
 		
-		listen = function(key,fn){
+		var listen = function(key,fn){
 			if(!clientList[key]){
 				clientList[key] = [];
 			}
 			clientList[key].push(fn);
 		}
-		trigger = function(...arg){
+		var trigger = function(...arg){
 			var key = arg.shift(),
 				fns = clientList[key];
 			if(!fns || fns.length<1){
@@ -103,7 +100,7 @@ Five：发布-订阅模式(观察者模式)--定义对象间的一种一对多�
 				fn.apply(this,arg)
 			}
 		}
-		remove = function(key,fn){
+		var remove = function(key,fn){
 			var fns = clientList[key];
 			if(!fns){
 				return false
@@ -148,7 +145,76 @@ Six：命令模式--向某些对象发送请求，但并不知道请求的接受
 	var refreshCommand = RefreshCommand(eventBar);
 	setCommand(btn, refreshCommand)//发布命令
 	
-Seven：组合模式--组合模式将对象组合成属性结构，以表示“部分-整体”的层次结构。
+Seven：组合模式--组合模式将对象组合成属性结构，以表示“部分-整体”的层次结构。可以让我们使用树形结构的对象。
+	var Folder = function(name){
+		this.name = name;
+		this.files = [];
+	}
+	Folder.prototype.add = function(file){this.files.push(file)}
+	Folder.prototype.scan = function(){
+		console.log('开始扫描：' + this.name);
+		for(var i=0,i<this.files.length;i++){
+			this.files[i].scan();
+		}
+	}
+	
+	var File = function(name){
+		this.name = name;
+	}
+	File.prototype.add = function(){
+		throw new Error('这是文件，不是文件夹')
+	}
+	File.prototype.scan = function(){console.log('开始扫描文件--'+this.name)}
+	
+	var folder = new Folder('学习资料');
+	var folder1 = new Folder('JavaScript');
+	var folder2 = new Folder('Jquery');
+	var folder3 = new Folder('Nodejs');
+	
+	var file1 = new File('JavaScript高级程序设计');
+	var file2 = new File('精通Jquery');
+	var file3 = new File('重构与模式');
+	var file4 = new File('深入浅出Node.js');
+	var file5 = new File('JavaScript设计模式与开发实践');
+	
+	folder1.add(file1);
+	folder2.add(file2);
+	folder3.add(file4);
+	
+	folder.add(folder1);
+	folder.add(folder2);
+	folder.add(file3);
+	folder.add(file5);
+	folder.add(folder3);
+	
+	folder.scan();
+	
+Eight：模板方法模式--一种只需要使用继承就可以实现的模式，由抽象父类和具体实现子类两部分构成。
+	var Dad = function(a,b,c){
+		this.a = a;
+		this.b = b;
+		this.c = c;
+		this.fn1 = function(){console.log(this.a)}
+		this.fn2 = function(){console.log(this.b+'--'+this.c)}
+		this.init = function(){
+			this.fn1();
+			this.fn2();
+		}
+	}
+	var Son1 = function(){
+		Dad.call(this,...arguments)
+	};
+
+	var Son2 = function(){
+		Dad.call(this,...arguments)
+	};
+	var son1 = new Son1(1,2,3);
+	var son2 = new Son2('a','b','c');
+	son1.init();
+	son2.init();
+	
+Nine：享元模式--核心是援用共享技术来有效支持大量细粒度的对象。
+	
 	
 	
 	
