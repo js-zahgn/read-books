@@ -1,4 +1,4 @@
-一、JS数据类型：
+#一、JS数据类型：
 	基本类型(栈) ：Undefined、Null、Boolean、Number、String
 	引用类型(堆) ：Object（Object,Array,Date,RegExp,Function,
 			基本包装类型（BooleanObject,NumberObject,StringObject））
@@ -6,10 +6,10 @@
 	栈是一种LIFO（Last-In-First-Out,后进先出）的数据结构
 	队列数据结构FIFO（First-In-First-Out,先进先出）
 
-二、JS执行机制：
-	1、判断同步还是异步，同步任务放入主线程，异步任务放入evnet table;
-	2、异步任务在event table中注册函数，满足条件后推入event unique;
-	3、同步任务进入主线程执行，直到主线程空闲时，查看event unique中是否有可执行的异步任务，有的话推入主线程。
+#二、JS执行机制：
+	##1、判断同步还是异步，同步任务放入主线程，异步任务放入evnet table;
+	##2、异步任务在event table中注册函数，满足条件后推入event unique;
+	##3、同步任务进入主线程执行，直到主线程空闲时，查看event unique中是否有可执行的异步任务，有的话推入主线程。
 	以上三步循环执行形成event loop.
 	macro-task(宏任务)：script,setTimeout,setInterval
 	micro-tast(微任务): Promise.then,process.nextTick
@@ -17,11 +17,11 @@
 	当宏任务执行完成后，查看微任务的event unique,并将里面的全部微任务依次执行完。
 	
 
-三、内存回收
+#三、内存回收
 	全局变量不用的情况下可以手动解除引用(赋值null)，以便JS垃圾收集器下次运行时将其回收。
 
-四、 面对对象程序设计模式
-	1、工厂模式：
+#四、 面对对象程序设计模式
+	##1、工厂模式：
     function createPerson(name,age,job){
        var  o =  new Object();
        o.name = name;
@@ -36,7 +36,7 @@
     var person2 = createPerson('老王',23,'Doctor')
     缺点：无法判断person1是否是createPerson类型
 
-   2、构造函数模式:
+   ##2、构造函数模式:
 	function Person(name,age,job){
 		this.name = name;
 		this.age = age;
@@ -55,7 +55,7 @@
 	person1/2 instanceof Person // true
 	缺点：每个实例都会用不同的Function实例，可以单独把方法提出来(暴露到全局作用域)，但是提出来的函数过多又会影响封装性。
 	
-	3、原型模式：
+	##3、原型模式：
 	function Person(){}
 	Person.prototype.name = '老张';
 	Person.prototype.age = 22;
@@ -91,7 +91,7 @@
 		
 	缺点：共享属性导致，修改单一实例属性导致原型中改属性值变化，从而导致其他实例属性也会变化；
 	
-	4、构造函数+原型模式组合模式：
+	##4、构造函数+原型模式组合模式：
 	function Person(name,age,job){
 		this.name = name;
 		this.age = age;
@@ -113,7 +113,7 @@
 	
 	这种模式是当前使用最广泛、认知度最高的方式
 	
-	5、动态原型模式：(在构造函数基础上动态添加原型属性)
+	##5、动态原型模式：(在构造函数基础上动态添加原型属性)
 	function Person(name,age,job){
 		this.name = name;
 		this.age = age;
@@ -128,7 +128,7 @@
 	f.sayName();
 	不能使用对象字面量重写原型，会导致切断实例与原型之间的联系;
 	
-	6、寄生构造函数模式：(其实就是一个工厂模式)
+	##6、寄生构造函数模式：(其实就是一个工厂模式)
 	function Person(name,age,job){
 		var o = new Object();
 		o.name = name;
@@ -152,7 +152,7 @@
 	
 	缺点：返回的对象与构造函数或者构造函数的原型属性之间没有关系，所以不能用instanceof判断对象类型，个人觉得就是一个工厂模式。
 	
-	7、稳妥构造函数模式：
+	##7、稳妥构造函数模式：
 	function Person(name,age,job){
 		var o = new Object();
 		// 这里可以设置私有属性或方法
@@ -164,8 +164,8 @@
 	f.sayName();
 	只通过函数访问实例原始数据，无法修改。同样无法使用instanceof判断对象类型
 	
-五、继承：
-	1、原型链继承：利用原型让一个引用类型继承另一个引用类型的属性和方法。
+#五、继承：
+	##1、原型链继承：利用原型让一个引用类型继承另一个引用类型的属性和方法。
 		function SuperType(){
 			this.aaa = 1;
 			this.arr = [1,2,3,4]
@@ -188,7 +188,7 @@
 		
 		缺点：由于共享父对象数据，如果其中一个子对象实例修改了父对象引用类型数据，会导致另一个子对象实例所继承的数据发生改变
 	
-	2、借用构造函数：在子类型构造函数的内部调用父类型构造函数
+	##2、借用构造函数：在子类型构造函数的内部调用父类型构造函数
 		function SuperType(arg){
 			this.name = arg[0]
 			this.colors = ['red','green','blue']
@@ -204,7 +204,7 @@
 		
 		缺点： 方法都在父对象中定义，对子对象不可见。
 		
-	3、组合继承：将原型链和借用构造函数组合，使用原型链实现对原型属性和方法的继承，通过构造函数实现对实例属性的继承
+	##3、组合继承：将原型链和借用构造函数组合，使用原型链实现对原型属性和方法的继承，通过构造函数实现对实例属性的继承
 		function SuperType(name){
 			this.name = name;
 			this.arr = [1,2,3,4];
@@ -233,7 +233,7 @@
 		
 		缺点：每次都会调用两次父对象构造函数，创建子对象原型的时候第一次，子对象原型构造函数内部
 	
-	4、原型式继承：基于已有的对象创建新对象
+	##4、原型式继承：基于已有的对象创建新对象
 		// 浅copy
 		function object(o){
 			function F(){}
@@ -253,7 +253,7 @@
 		
 		缺点：如果共用属性是引用类型会导致，一个实例改变该属性值的时候引起另一个实例此属性值的变化
 		
-	5、寄生式继承：创建一个仅用于封装继承过程的函数，在该函数内对对象进行修改，最后返回
+	##5、寄生式继承：创建一个仅用于封装继承过程的函数，在该函数内对对象进行修改，最后返回
 		感觉跟原型式继承区别不大
 		function createAnother(original){
 			var clone = object(original)== Object.create(original)
@@ -269,7 +269,7 @@
 		
 		缺点：由于在函数内部为对象添加函数，会导致函数不能复用而降低效率
 		
-	6、寄生组合式继承：子对象使用寄生式继承来继承父对象的原型，再将结果指定给子对象类型的原型
+	##6、寄生组合式继承：子对象使用寄生式继承来继承父对象的原型，再将结果指定给子对象类型的原型
 		function inheritPrototype(son,dad){
 			var prototype = Object.create(dad.prototype);
 			prototype.constructor = son;// 弥补因重写原型导致的失去默认construtor属性
@@ -289,10 +289,10 @@
 		
 		此继承方式属于原型链继承和借用构造函数继承组合的优化版本，引用类型最理想的继承方式
 		
-六、函数
-	1、闭包：指有权访问另一个函数作用域中变量的函数。常见方式就是在一个函数内部创建另一个函数。
-	2、高阶函数： 函数可以作为参数被传递；函数可以作为返回值输出。
-	3、函数柯里化：使用一个闭包绑定一个函数。一个currying函数先接受一些参数，保存起来，
+#六、函数
+	##1、闭包：指有权访问另一个函数作用域中变量的函数。常见方式就是在一个函数内部创建另一个函数。
+	##2、高阶函数： 函数可以作为参数被传递；函数可以作为返回值输出。
+	##3、函数柯里化：使用一个闭包绑定一个函数。一个currying函数先接受一些参数，保存起来，
 				    继续返回另外一个函数，直到达到执行条件后再调用所有的参数。
 					
 		var currying = function(fn){
@@ -340,7 +340,7 @@
 		add(1,2,3)(4,5) // 15
 		add(1)(2)(3)(4)(5) // 15
 		
-	4、new 关键字
+	##4、new 关键字
 		function Person(name){this.name = name;}
 		Person.prototype.sayName = function(){console.log(this.name)}
 		// 模拟new的过程
@@ -354,23 +354,23 @@
 		var a = objectFactory(Person,'laozhang');// 效果一样 new Person('laozhang')
 		a instanceof Person // true;
 
-七、从url输入到页面展现：
-   1：DNS解析：将域名解析成IP地址;
+#七、从url输入到页面展现：
+   ##1：DNS解析：将域名解析成IP地址;
 	  浏览器缓存->系统缓存->hosts是否有对应IP->
 	  浏览器向DNS服务器发送域名，DNS查询到与域名对应的IP地址，返回给浏览器。
-   2：建立TCP链接：TCP三次握手
+   ##2：建立TCP链接：TCP三次握手
 	  客户端发送数据包到服务器端口(1,浏览器告诉服务器我要发送请求了)
 	  服务器返回响应包以示传达确认信息(2,服务器告诉浏览器，准备完毕，可以发送请求了)
 	  浏览器回传数据包,握手结束(3,浏览器告诉服务器马上发送了)
-   3：发送HTTP请求;
-   4：服务器处理请求并返回HTTP报文;
-   5：浏览器解析渲染页面;
+   ##3：发送HTTP请求;
+   ##4：服务器处理请求并返回HTTP报文;
+   ##5：浏览器解析渲染页面;
 	  浏览器拿到相应文本HTML,根据HTML解析DOM树,
 	  根据CSS解析生成CSS规则树,
 	  结合DOM树和CSS树生成渲染树，
 	  根据渲染树计算每个节点信息
 	  根据计算结果绘制页面
-   6：断开链接：数据传送完毕，断开TCP链接，发起TCP四次挥手.
+   ##6：断开链接：数据传送完毕，断开TCP链接，发起TCP四次挥手.
 	  浏览器向服务器发送报文,Fin、Ack、Seq,表示数据传输完毕。进入FIN_WAIT_1状态。
 	  服务器向浏览器发送报文,Ack、Seq,表示同意关闭请求。进入FIN_WAIT_2状态。
 	  服务器向浏览器发送报文段,Fin、Ack、Seq,请求关闭链接。进入LAST_ACK状态。
