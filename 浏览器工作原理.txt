@@ -27,8 +27,7 @@
 	Memory Cache: 内存缓存，主要作为缓存页面使用各种派生资源，加速页面中相同资源的加载。
 	Disk Cache：磁盘缓存(web缓存)，强缓存不请求服务器，协商缓请求服务器。
 				强缓存--浏览器在加载资源时，先根据这个资源的http header判断它时候是强缓存，如果存在则直接读取缓存。
-				协商缓存--当强缓存不存在时，浏览器请求服务器，服务端通根据http header判断是否存在协商缓存。
-				              如果存在返回304，告诉客户端从缓存中取数据。如果不存在则返回200，将资源返回客户端，并更新本地缓存数据。
+				协商缓存--当强缓存不存在时，浏览器请求服务器，服务端通根据httpHeader判断是否存在协商缓存。如果存在返回304，告诉客户端从缓存中取数据。如果不存在则返回200，将资源返回客户端，并更新本地缓存数据。
 
 三、文档渲染过程：
 	渲染引擎解析HTML文档得过程就是将字节流形式的网页内容解析成DOMTree、RenderTree、RenderLayerTree三棵树的过程。	  
@@ -41,17 +40,43 @@
 	DOM(DocumentObjectModel)树：允许程序和脚本动态地访问和更新文档结构和样式。
 
 	Render(RenderObject)树：存储文档的可视信息，记录文档中每个可视元素的布局及渲染方式。
-
-	RenderLayer(RenderObject)树：以层为节点组织文档的可视信息，网页上的每一层对应一个RenderLayer对象。RenderLayer树可以看做Render树的稀疏表示，每个RenderLayer树的节点都对应着一棵Render树的子树，这棵子树上所有Render节点都在网页的同一层显示。RenderLayer的一个重要用途是可以在绘制时实现合成加速，即每一个RenderLayer对应系统的一块后端存储，这样在网页内容发生更新时，可以只更新有变化的RenderLayer,从而提高渲染效率。
+	RenderLayer(RenderLayerObject)树：以层为节点组织文档的可视信息，网页上的每一层对应一个RenderLayer对象。RenderLayer树可以看做Render树的稀疏表示，每个RenderLayer树的节点都对应着一棵Render树的子树，这棵子树上所有Render节点都在网页的同一层显示。RenderLayer的一个重要用途是可以在绘制时实现合成加速，即每一个RenderLayer对应系统的一块后端存储，这样在网页内容发生更新时，可以只更新有变化的RenderLayer,从而提高渲染效率。
+		RenderLayer创建条件(满足下列条件之一)：
+		1、网页的root节点;
+		2、有显示的CSS position属性(relative,absolute,fixed);
+		3、元素设置了tranform;
+		4、元素opacity不等于1;
+		5、节点溢出(overflow)，alpha mask或者反射(reflection)效果;
+		6、元素有CSS filter属性;
+		7、2D Canvas或者WebGL;
+		8、Video元素。
 
 四、JS执行：标签中使用async属性，JS脚本加载过程不会阻塞文档解析，脚本加载完成后会立即执行。
 		    标签中使用defer属性，JS脚本加载过程不会阻塞文档解析，当脚本的执行要等到文档解析完成之后。
             外部引用脚本文件，从脚本下载到脚本执行完，文档解析过程会一直被阻塞。
 
+五、渲染方式：先得到网页的绘制信息，再将网页绘制信息转换成像素呈现。
+	软件渲染--直接将网页内容绘制到一块图形缓冲区上。占用内存少，整体绘制，无法局部更新。	硬件渲染--网页各层的合成是通过GPU完成的。采用分块渲染(网页内容被一组Tile覆盖，每块Tile对应一个独立的后端存储，当网页内容更新          时，只更新内容有变化的Tile)策略。拒不更新，渲染效率高。
 
+六、重绘回流：网页生成后，脚本操作、样式表变更，以及用户操作都可能触发重绘和回流。
+	RenderTree回流--窗口尺寸被修改、发生滚动操作，或者元素位置相关属性更新时会触发布局过程，在布局过程中要计算所有元素的位置信息。
+	触发回流操作：
+	 1、增删改DOM节点;
+	 2、移动DOM的位置或是动画显示(所以尽量用canvas来做动画) ;
+	 3、获取offsetTop/Left/Width/Height,scrollTop/Left/Width/Height,clientTop/Left/Width/Height,getComputedStyle(),currentStyle();
+	 4、修改width、display等CSS样式;
+	 5、resize窗口或是滚动的时候。
 
+	回流必然触发重绘操作;重绘发生在RenderLayer层。
+	
+	重绘--当与视觉相关的样式属性值被更新时会触发绘制过程，在绘制过程中要重新计算元素的视觉信息，使元素呈现新的外观。
 
+七、减少回流次数的性能优化：
+	1、不要逐条修改DOM样式，而是修改className或者style.cssText;
+	2、在内存中多次操作节点，完成后再添加到文档中去;
+	3、对于一个元素进行复杂的操作时，可以先隐藏它，操作完后再显示;
+	4、在需要经常获取那些引起浏览器回流的属性值时，存到变量中;
+	5、不要使用table布局。
+	6、将需要多次回流的元素独立成一个RenderLayer层，如设置absolute,可以减少重绘范围;对于一些进行动画的元素，可以进行硬件渲染，从而避免不必要的重绘和回流.
 
-
-
-								  
+					  
