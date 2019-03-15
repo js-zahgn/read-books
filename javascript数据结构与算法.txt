@@ -207,15 +207,40 @@
 		
 		// 从列表中移除一个元素
 		this.remove = function(element){
-			  
-		
+			var index = this.indexOf(element);
+			this.removeAt(index);
 		}
 		// 判断元素是否在列表中，如果在返回索引，否则返回-1
-		this.indexOf = function(element){}
-		this.isEmpty = function(){}
-		this.size = function(){}
-		this.toString = function(){}
-		this.print = function(){}	
+		this.indexOf = function(element){
+			var current = head,
+				index = -1;
+			while(current){
+				if(JSON.stringify(element) === JSON.stringify(current.element)){
+					return index;
+				}
+				index++;
+				current = current.next;
+			}
+			return -1;
+		}
+		this.isEmpty = function(){
+			return length === 0;
+		}
+		this.size = function(){
+			return length;
+		}
+		this.toString = function(){
+			var current = head,
+				string = '';
+			while(current){
+				string = current.element;
+				current = current.next;
+			}
+			return string;
+		}
+		this.print = function(){
+			console.log(this.toString());
+		}	
 	}
 	
 	
