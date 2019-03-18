@@ -378,7 +378,57 @@
 	export default LinkList
 	
 	②双向链表
+	双向链表和普通链表的区别在于，双向链表的及节点是双向的，前一个，后一个。
 	
+	function DoublyLinkList(){
+		var Node = function(element){
+			this.element = element;
+			this.next = null;
+			this.prev = null;
+		}
+		
+		var length = 0;
+		var head = null;
+		var tail = null;
+		
+		this.insert = function(pos,element){
+			var node = new Node(element),
+				current = head,
+				previous,
+				index = 0;
+			if(pos >= 0 && pos <= length){
+				if(pos === 0){
+					if(!head){
+						head = node;
+						tail = node;
+					} else {
+						node.next = current;
+						current.prev = node;
+						head = node;
+					}
+				} else if(pos === length){
+					current = tail;
+					current.next = node;
+					node.prev = current;
+					tail = node;
+				} else {
+					while(index++ < pos){
+						previous = current;
+						current = current.next;
+					}
+					node.next = current;
+					previous.next = node;
+					
+					current.prev = node;
+					node.prev = previous;
+				}
+				length++;
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
 	
 	
 	
