@@ -620,9 +620,79 @@
 	循环链表可以像链表一样有单向引用，也可以像双向链表一样有双向引用。
 	单向循环链表tail.nex指向head。
 	双向循环链表的tail.next指向head,head.prev指向tail
-
 	
+4、集合
+	集合是由一组无序且唯一的想组成。这个数据结构使用了有限集合相同的数学概念，但应用在计算机科学的数据结构中。
 	
+	es5
+	function Set(){
+		var items = {};
+		this.add = function(val){
+			if(!this.has(val)){
+				items[val] = val;
+				return true;
+			}
+			return false;
+		}
+		this.remove = function(val){
+			if(this.has(val)){
+				delete items[val];
+				return true;
+			}
+			return false;
+		}
+		this.has = function(val){
+			return items.hasOwnProperty(val);
+		}
+		this.clear = function(){
+			items = {};
+		}
+		this.size = function(){
+			return Object.keys(items).length;
+		}
+		this.values = function(){
+			return Object.values(items);
+		}
+		
+		// 并集
+		this.union = function(otherSet){
+			var res = new Set();
+			var values = this.values();
+			values.map(e=>res.add(items[e]));
+			var otherValues = otherSet.values();
+			otherValues.map(e=>res.add(items[e]));
+			
+			return res;
+		}
+		
+		// 交集
+		this.intersection = function(otherSet){
+			var res = new Set();
+			var values = this.values();
+			values.filter(e=>otherSet.has(e)).map(e=>res.add(e));
+			return res;
+		}
+		
+		// 差集
+		this.difference = function(otherSet){
+			var res = new Set();
+			var values = this.values();
+			values.filter(e=>!otherSet.has(e)).map(e=>res.add(e));
+			return res;
+		}
+		
+		// 子集 此集合是否是对比集合的子集
+		this.subSet = function(otherSet){
+			if(this.size() > otherSet.size()){
+				return
+			} else {
+				var values = this.values();
+				return values.every(e=>otherSet.has(e))
+			}
+		}
+	}
+	es6
+	可以直接使用Set类
 	
 	
 	
