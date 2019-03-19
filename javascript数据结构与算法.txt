@@ -728,8 +728,32 @@
 		}
 	}
 	
+6、散列表 HashMap
+	散列算法的作用是尽可能快的在数据结构中找到一个值。是Dictionary类的一种散列表实现方式。
 	
+	function HashTable(){
+		var table = [];
+		var loseloseHashCode = function(key){
+			var hash = 0;
+			for(var i=0;i<key.length;i++){
+				hash += key.charCodeAt(i);
+			}
+			return hash % 37;
+		}
+		this.put = function(key,value){
+			var position = loseloseHashCode(key);
+			console.log(position + '->' + key);
+			table[position] = value;
+		}
+		this.remove = function(key){
+			table[loseloseHashCode(key)] = undefined;
+		}
+		this.get = function(key){
+			return table[loseloseHashCode(key)];
+		}
+	}
 	
+	散列表冲突
 	
 	
 	
