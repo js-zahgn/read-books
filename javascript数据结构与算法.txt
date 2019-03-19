@@ -691,11 +691,42 @@
 			}
 		}
 	}
-	es6
-	可以直接使用Set类
+	es6 可以直接使用Set类
 	
+5、字典
+	字典是存储的[键，值]对，其中键名是用来查询特定元素的。字典和集合的区别集合以[值，值]的形式存储元素。字典也称作映射。
 	
-	
+	function Dictionary(){
+		var items = {};
+		this.set = function(key,val){
+			items[key] = val;
+		}
+		this.remove = function(key){
+			if(this.has(key)){
+				delete items[key];
+				return true;
+			}
+			return false;
+		}
+		this.has = function(key){
+			return items.hasOwnProperty(key);
+		}
+		this.get = function(key){
+			return this.has(key) ? items[key] : undefined;
+		}
+		this.clear = function(){
+			items = {};
+		}
+		this.size = function(){
+			return Object.keys(items).length;
+		}
+		this.keys = function(){
+			return Object.keys(items);
+		}
+		this.values = function(){
+			return Object.values(items);
+		}
+	}
 	
 	
 	
