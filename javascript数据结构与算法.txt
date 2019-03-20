@@ -215,7 +215,7 @@
 			var current = head,
 				index = -1;
 			while(current){
-				if(JSON.stringify(element) === JSON.stringify(current.element)){
+				if(element === current.element){
 					return index;
 				}
 				index++;
@@ -829,7 +829,51 @@
 				table[index] = new ValuePair(key, value);
 			}
 	  }
-
+	  this.get = function(key){
+		var pos = loseloseHashCode(key);
+		if(table[pos]!==undefined){
+			if(table[pos].key === key){
+				return table[pos].value;
+			} else {
+				var index = ++pos;
+				// 这里判断是否undefined是为了确认是否有删除的项
+				while(table[index]===undefined || table[index].key!==key){
+					index++;
+				}
+				if(table[pos].key === key){
+					return table[index].value;
+				}
+			}
+		}
+		return undefined;
+	  }
+	  this.remove = function(key){
+		var pos = loseloseHashCode(key);
+		if(table[pos]!==undefined){
+			if(table[pos].key === key){
+				table[pos] = undefined;
+			} else {
+				var index = ++pos;
+				while(table[index]===undefined || table[index].key!==key){
+					index++;
+				}
+				if(table[pos].key === key){
+					table[index] = undefined;
+				}
+			}
+		}
+		return undefined;
+	  }
+	  
+	  3、社区推荐散列表实现方式：使用djb2HashCode实现散列函数代替loselose函数.不是最好的散列函数，但是社区推荐的散列函数之一。
+		var djb2HashCode = function(key){
+			var hash = 5381;
+			for(var i=0;i<key.length;i++){
+				hash = hash * 33 + key.charCodeAt(i);
+			}
+			return hash % 1013;
+		}
+		
 
 
 
