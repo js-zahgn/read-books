@@ -729,7 +729,7 @@
 	}
 	
 6、散列表 HashMap
-	散列算法的作用是尽可能快的在数据结构中找到一个值。是Dictionary类的一种散列表实现方式。
+	非顺序数据结构。散列算法的作用是尽可能快的在数据结构中找到一个值。是Dictionary类的一种散列表实现方式。
 	
 	function HashTable(){
 		var table = [];
@@ -874,10 +874,57 @@
 			return hash % 1013;
 		}
 		
+7、树：非顺序数据结构。一个树结构包含一系列存在父子关系的节点。树顶部叫根节点，它没有父节点。树中每个元素都叫做节点，至少又一个子节点的叫内部节点，没有子节点的叫外部节点或叶节点。
 
-
-
-
+	①二叉树:节点最多只能有左右两个子节点
+	function BinarySeacrhTree(){
+		var Node = function(key){
+			this.key = key;
+			this.left = null;
+			this.right = null;
+		}
+		var root = null;
+		
+		function insertNode(node,newNode){
+			if(newNode.key < node.key){
+				if(node.left === null){
+					node.left = newNode;
+				} else {
+					insertNode(node.left, newNode);
+				}
+			} else {
+				if(node.right === null){
+					node.right = newNode;
+				} else {
+					insertNode(node.right, newNode);
+				}
+			}
+		}
+		
+		// 插入节点
+		this.insert = function(key){
+			var newNode = new Node(key);
+			if(root===null){
+				root = newNode;
+			} else {
+				insertNode(root,newNode);
+			}
+		}
+		// 搜索获取节点
+		this.search = function(key){}
+		// 通过中序遍历方式遍历所有节点
+		this.inOrderTraverse = function(){}
+		// 通过先序遍历方式遍历所有节点
+		this.preOrderTraverse = function(){}
+		// 通过后序遍历方式遍历所有界定啊
+		this.postOrderTraverse = function(){}
+		// 返回树中最小的值/键
+		this.min = function(){}
+		// 返回树中最大的值/键
+		this.max = function(){}
+		// 删除一个键
+		this.remove = function(key){}
+	}
 
 
 
