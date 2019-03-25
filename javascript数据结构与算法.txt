@@ -1,3 +1,12 @@
+O(n)的理解：
+时间复杂度这个东西，其实更准确点说应该是描述一个算法在问题规模不断增大时对应的时间增长曲线。所以这些增长数量级不是一个准确的性能评价，可以理解为一个近似值，时间的增长近似于logN、NlogN的曲线。
+O(x)指的是时间复杂度。
+O(1)对应哈希表，每次查找都由唯一下标查找，只需要一次查找就能返回结果。例如去买烟，顾客说出烟名，老板直接给烟;
+O(n)随着样本数量的增加，复杂度随之线性增加。需要序贯处理的算法的复杂度都不回低于O(n)。例如数数1-100要100秒，1-200不少于200秒;
+O(n^2)计算复杂度随着样本数量的增加呈平方数增加。例如从n张试卷中取出分数最高的，然后再取第二的。。。需要反复n次。每次的复杂度是O(n)，执行n次,所以时间复杂度为O(n^2);
+O(nlogn) 例如二叉搜索树。前提为n张试卷已经按分数高低排好，取分数为59的，先取中间那张，如果大于59则取上面的，再从上半部分中间取出一张跟59对比。。。
+n/2^k = 1 => k = log2n.
+
 1、栈
 	栈是一种遵从后进先出(LIFO)原则的有序集合。新添加的或待删除的元素都保存在栈的末尾，称作栈顶，另一端叫栈底。在栈里，新元素都靠近栈顶，旧元素都接近栈底。
 	function Stack(){
@@ -1032,9 +1041,8 @@
 
 	//定义节点
 	class Node {
-	  constructor(data) {
-		this.root = this;
-		this.data = data;
+	  constructor(key) {
+		this.key = key;
 		this.left = null;
 		this.right = null
 	  }
@@ -1045,10 +1053,10 @@
 		this.root = null
 	  }
 	  //插入节点
-	  insert(data) {
-		const newNode = new Node(data);
+	  insert(key) {
+		const newNode = new Node(key);
 		const insertNode = (node, newNode) => {
-		  if (newNode.data < node.data) {
+		  if (newNode.key < node.key) {
 			if (node.left === null) {
 			  node.left = newNode
 			} else {
@@ -1076,7 +1084,7 @@
 		const inOrderNode = (node, callback) => {
 		  if (node !== null) {
 			inOrderNode(node.left, callback);
-			backs.push(callback(node.data));
+			backs.push(callback(node.key));
 			inOrderNode(node.right, callback)
 		  }
 		};
@@ -1092,7 +1100,7 @@
 		let backs = [];
 		const preOrderNode = (node, callback) => {
 		  if (node !== null) {
-			backs.push(callback(node.data));
+			backs.push(callback(node.key));
 			preOrderNode(node.left, callback);
 			preOrderNode(node.right, callback)
 		  }
@@ -1111,7 +1119,7 @@
 		  if (node !== null) {
 			postOrderNode(node.left, callback);
 			postOrderNode(node.right, callback);
-			backs.push(callback(node.data))
+			backs.push(callback(node.key))
 		  }
 		};
 		postOrderNode(this.root, callback);
@@ -1136,38 +1144,38 @@
 		return minNode(node || this.root)
 	  }
 	  //查找特定值
-	  find(data) {
-		const findNode = (node, data) => {
+	  find(key) {
+		const findNode = (node, key) => {
 		  if (node === null) return false;
-		  if (node.data === data) return node;
-		  return findNode((data < node.data) ? node.left : node.right, data)
+		  if (node.key === key) return node;
+		  return findNode((key < node.key) ? node.left : node.right, key)
 		};
-		return findNode(this.root, data)
+		return findNode(this.root, key)
 
 	  }
 	  //删除节点
-	  remove(data) {
-		const removeNode = (node, data) => {
+	  remove(key) {
+		const removeNode = (node, key) => {
 		  if (node === null) return null;
-		  if (node.data === data) {
+		  if (node.key === key) {
 			if (node.left === null && node.right === null) return null;
 			if (node.left === null) return node.right;
 			if (node.right === null) return node.left;
 			if (node.left !== null && node.right !== null) {
 			  let _node = this.getMin(node.right);
-			  node.data = _node.data;
-			  node.right = removeNode(node.right, data);
+			  node.key = _node.key;
+			  node.right = removeNode(node.right, key);
 			  return node
 			}
-		  } else if (data < node.data) {
-			node.left = removeNode(node.left, data);
+		  } else if (key < node.key) {
+			node.left = removeNode(node.left, key);
 			return node
 		  } else {
-			node.right = removeNode(node.right, data);
+			node.right = removeNode(node.right, key);
 			return node
 		  }
 		};
-		return removeNode(this.root, data)
+		return removeNode(this.root, key)
 	  }
 	}
 
