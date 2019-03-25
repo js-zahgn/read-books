@@ -1,0 +1,307 @@
+O(n)的理解：
+时间复杂度这个东西，其实更准确点说应该是描述一个算法在问题规模不断增大时对应的时间增长曲线。所以这些增长数量级不是一个准确的性能评价，可以理解为一个近似值，时间的增长近似于logN、NlogN的曲线。
+O(x)指的是时间复杂度。
+O(1)对应哈希表，每次查找都由唯一下标查找，只需要一次查找就能返回结果。例如去买烟，顾客说出烟名，老板直接给烟;
+O(n)随着样本数量的增加，复杂度随之线性增加。需要序贯处理的算法的复杂度都不回低于O(n)。例如数数1-100要100秒，1-200不少于200秒;
+O(n^2)计算复杂度随着样本数量的增加呈平方数增加。例如从n张试卷中取出分数最高的，然后再取第二的。。。需要反复n次。每次的复杂度是O(n)，执行n次,所以时间复杂度为O(n^2);
+O(nlogn) 例如二叉搜索树。前提为n张试卷已经按分数高低排好，取分数为59的，先取中间那张，如果大于59则取上面的，再从上半部分中间取出一张跟59对比。。。
+n/2^k = 1 => k = log2n.
+
+
+树：非顺序数据结构。一个树结构包含一系列存在父子关系的节点。树顶部叫根节点，它没有父节点。树中每个元素都叫做节点，至少又一个子节点的叫内部节点，没有子节点的叫外部节点或叶节点。
+
+二叉树:节点最多只能有左右两个子节点。
+function BinarySeacrhTree(){
+	var Node = function(key){
+		this.key = key;
+		this.left = null;
+		this.right = null;
+	}
+	var root = null;
+	
+	function insertNode(node,newNode){
+		if(newNode.key < node.key){
+			if(node.left === null){
+				node.left = newNode;
+			} else {
+				insertNode(node.left, newNode);
+			}
+		} else {
+			if(node.right === null){
+				node.right = newNode;
+			} else {
+				insertNode(node.right, newNode);
+			}
+		}
+	}
+	
+	// 插入节点
+	this.insert = function(key){
+		var newNode = new Node(key);
+		if(root===null){
+			root = newNode;
+		} else {
+			insertNode(root,newNode);
+		}
+	}
+	
+	function searchNode(node,key){
+		if(node === null){
+			return false;
+		}
+		if(key < node.key){
+			return searchNode(node.left,key);
+		} else if(key > node.key){
+			return searchNode(node.right, key);
+		} else {
+			return true;
+		}
+	}
+	// 搜索获取节点
+	this.search = function(key){
+		return searchNode(root,key);
+	}
+	
+	function inTraverseNode(node,cb=function(val){console.log(val)}){
+		if(node!==null){
+			inTraverseNode(node.left, cb);
+			cb(node.key);
+			inTraverseNode(node.right, cb);
+		}
+	}		
+	// 通过中序遍历方式遍历所有节点
+	this.inOrderTraverse = function(cb){
+		inTraverseNode(root,cb);
+	}
+	
+	function preOrderTraverseNode(node,cb=function(val){console.log(val)}){
+		if(node!==null){
+			cb(node.key);
+			preOrderTraverseNode(node.left,cb);
+			preOrderTraverseNode(node.right,cb);
+		}
+	}
+	// 通过先序遍历方式遍历所有节点
+	this.preOrderTraverse = function(cb){
+		preOrderTraverseNode(root,cb)
+	}
+	function postOrderTraverseNode(node,cb=function(val){console.log(val)}){
+		if(node!==null){
+			postOrderTraverseNode(node.left,cb);
+			postOrderTraverseNode(node.right,cb);
+			cb(node.key);
+		}
+	}
+	// 通过后序遍历方式遍历所有界定啊
+	this.postOrderTraverse = function(cb){
+		postOrderTraverseNode(root,cb)
+	}
+	// 返回树中最小的值/键
+	this.min = function(){
+		var node = root;
+		if(node){
+			while(node && node.left !== null){
+				node = node.left;
+			}
+			return node.key;
+		}
+		return null;
+	}
+	// 返回树中最大的值/键
+	this.max = function(){
+		var node = root;
+		if(node){
+			while(node && node.right !== null){
+				node = node.right;
+			}
+			return node.key;
+		}
+		return null;
+	}
+	
+	function removeNode(node,key){
+		if(node === null){ // 2
+			return null;
+		}
+		if(key < node.key){ // 3
+			node.left = removeNode(node.left,key); // 4
+			return node; // 5
+		} else if(key > node.key){ // 6
+			node.right = removeNode(node.right,key); // 7
+			return node; // 8
+		} else {
+			// 键等于node.key
+			// 一个叶节点
+			if(node.left === null && node.right === null){ // 9
+				node = null; // 10
+				return node; // 11
+			}
+			
+			// 只有一个子节点的节点
+			if(node.left === null){ // 12
+				node = node.right; // 13
+				return node; // 14
+			} else if(node.right === null){ // 15
+				node = node.right; // 16
+				return node; // 17
+			}
+		
+			// 有两个子节点的节点
+			var aux = (function(n){
+				while(n && n.left !== null){
+					n = n.left;
+				}
+				return n;
+			})(node.right) // 18
+			node.key = aux.key; // 19
+			node.right = removeNode(node.right, aux.key); // 20
+			return node; // 21
+		}
+	}
+	// 删除一个键
+	this.remove = function(key){
+		root = removeNode(root,key);
+	}
+}
+
+//定义节点
+class Node {
+  constructor(key) {
+	this.key = key;
+	this.left = null;
+	this.right = null
+  }
+}
+//创建二叉搜索树(BST)）
+class BinarySearchTree {
+  constructor() {
+	this.root = null
+  }
+  //插入节点
+  insert(key) {
+	const newNode = new Node(key);
+	const insertNode = (node, newNode) => {
+	  if (newNode.key < node.key) {
+		if (node.left === null) {
+		  node.left = newNode
+		} else {
+		  insertNode(node.left, newNode)
+		}
+	  } else {
+		if (node.right === null) {
+		  node.right = newNode
+		} else {
+		  insertNode(node.right, newNode)
+		}
+
+	  }
+	};
+	if (!this.root) {
+	  this.root = newNode
+	} else {
+	  insertNode(this.root, newNode)
+
+	}
+  }
+  //中序遍历
+  inOrder() {
+	let backs = [];
+	const inOrderNode = (node, callback) => {
+	  if (node !== null) {
+		inOrderNode(node.left, callback);
+		backs.push(callback(node.key));
+		inOrderNode(node.right, callback)
+	  }
+	};
+	inOrderNode(this.root, callback);
+
+	function callback(v) {
+	  return v
+	}
+	return backs
+  }
+  //前序遍历
+  preOrder() {
+	let backs = [];
+	const preOrderNode = (node, callback) => {
+	  if (node !== null) {
+		backs.push(callback(node.key));
+		preOrderNode(node.left, callback);
+		preOrderNode(node.right, callback)
+	  }
+	};
+	preOrderNode(this.root, callback);
+
+	function callback(v) {
+	  return v
+	}
+	return backs
+  }
+  //后序遍历
+  postOrder() {
+	let backs = [];
+	const postOrderNode = (node, callback) => {
+	  if (node !== null) {
+		postOrderNode(node.left, callback);
+		postOrderNode(node.right, callback);
+		backs.push(callback(node.key))
+	  }
+	};
+	postOrderNode(this.root, callback);
+
+	function callback(v) {
+	  return v
+	}
+	return backs
+  }
+  //查找最小值
+  getMin(node) {
+	const minNode = node => {
+	  return node ? (node.left ? minNode(node.left) : node) : null
+	};
+	return minNode(node || this.root)
+  }
+  //查找最大值
+  getMax(node) {
+	const minNode = node => {
+	  return node ? (node.right ? minNode(node.right) : node) : null
+	};
+	return minNode(node || this.root)
+  }
+  //查找特定值
+  find(key) {
+	const findNode = (node, key) => {
+	  if (node === null) return false;
+	  if (node.key === key) return node;
+	  return findNode((key < node.key) ? node.left : node.right, key)
+	};
+	return findNode(this.root, key)
+
+  }
+  //删除节点
+  remove(key) {
+	const removeNode = (node, key) => {
+	  if (node === null) return null;
+	  if (node.key === key) {
+		if (node.left === null && node.right === null) return null;
+		if (node.left === null) return node.right;
+		if (node.right === null) return node.left;
+		if (node.left !== null && node.right !== null) {
+		  let _node = this.getMin(node.right);
+		  node.key = _node.key;
+		  node.right = removeNode(node.right, key);
+		  return node
+		}
+	  } else if (key < node.key) {
+		node.left = removeNode(node.left, key);
+		return node
+	  } else {
+		node.right = removeNode(node.right, key);
+		return node
+	  }
+	};
+	return removeNode(this.root, key)
+  }
+}
+
+典型二叉平衡树：AVL(自平衡)二叉树，红黑树...

@@ -1,0 +1,144 @@
+非顺序数据结构。散列算法的作用是尽可能快的在数据结构中找到一个值。是Dictionary类的一种散列表实现方式。
+
+function HashTable(){
+	var table = [];
+	var loseloseHashCode = function(key){
+		var hash = 0;
+		for(var i=0;i<key.length;i++){
+			hash += key.charCodeAt(i);
+		}
+		return hash % 37;
+	}
+	this.put = function(key,value){
+		var position = loseloseHashCode(key);
+		console.log(position + '->' + key);
+		table[position] = value;
+	}
+	this.remove = function(key){
+		table[loseloseHashCode(key)] = undefined;
+	}
+	this.get = function(key){
+		return table[loseloseHashCode(key)];
+	}
+}
+
+解决散列表冲突(键名相同时候，后加入的会覆盖之前的)
+1、分离链接:包括为散列表的每一个位置创建一个链表并将元素存储在里面。是解决冲突最简单的办法，但是这种方法在HashTable实例之外还需要额外的存储空间。
+function HashTable(){
+	var table = [];
+	var loseloseHashCode = ...
+	var ValuePair = function(key,value){
+		this.key = key;
+		this.value = value;
+		this.toString = function(){
+			return `[${this.key}->${this.value}`
+		}
+	}
+	this.put = function(key,value){
+		var pos = loseloseHashCode(key);
+		
+		if(table[pos] == undefined){
+			table[pos] = new LinkList();
+		}
+		table[pos].append(new ValuePair(key, value));
+	}
+	this.get = function(key){
+		var pos = loseloseHashCode(key);
+		if(table[pos]!==undefined){
+			var current = table[pos].header();
+			while(current.next){
+				if(current.element.key===key){
+					return current.element.value;
+				}
+				current = current.next;
+			}
+			if(current.element.key===key){
+				return current.element.value;
+			}
+		}
+		return undefined;
+	}
+	this.remove = function(key){
+		var pos = loseloseHashCode(key);
+		var current = table[pos].header();
+		while(current.next){
+			if(current.element.key === key){
+				table[pos].remove(current.element);
+				if(table[pos].isEmpty()){
+					table[pos] = undefined;
+					// 个人倾向于使用
+					// delete table[pos]
+				}
+				return true;
+			}
+			current = current.next;
+		}
+		if(current.element.key === key){
+			table[pos].remove(current.element);
+			if(table[pos].isEmpty()){
+				table[pos] = undefined;
+			}
+			return true;
+		}
+	}
+	
+}
+
+2、线性探查:当向表中index位置加入一个新元素时，如果index位置已经有值，就尝试index+1位置,如果index+1也有值，尝试index+2，以此类推。
+
+  this.put = function (key, value) {
+	var pos = loseloseHashCode(key);
+		if (table[pos] === undefined) {
+			table[pos] = new ValuePair(key, value);
+		} else {
+			var index = ++pos;
+			while (table[index] !== undefined) {
+				index++;
+			}
+			table[index] = new ValuePair(key, value);
+		}
+  }
+  this.get = function(key){
+	var pos = loseloseHashCode(key);
+	if(table[pos]!==undefined){
+		if(table[pos].key === key){
+			return table[pos].value;
+		} else {
+			var index = ++pos;
+			// 这里判断是否undefined是为了确认是否有删除的项
+			while(table[index]===undefined || table[index].key!==key){
+				index++;
+			}
+			if(table[pos].key === key){
+				return table[index].value;
+			}
+		}
+	}
+	return undefined;
+  }
+  this.remove = function(key){
+	var pos = loseloseHashCode(key);
+	if(table[pos]!==undefined){
+		if(table[pos].key === key){
+			table[pos] = undefined;
+		} else {
+			var index = ++pos;
+			while(table[index]===undefined || table[index].key!==key){
+				index++;
+			}
+			if(table[pos].key === key){
+				table[index] = undefined;
+			}
+		}
+	}
+	return undefined;
+  }
+  
+  3、社区推荐散列表实现方式：使用djb2HashCode实现散列函数代替loselose函数.不是最好的散列函数，但是社区推荐的散列函数之一。
+	var djb2HashCode = function(key){
+		var hash = 5381;
+		for(var i=0;i<key.length;i++){
+			hash = hash * 33 + key.charCodeAt(i);
+		}
+		return hash % 1013;
+	}

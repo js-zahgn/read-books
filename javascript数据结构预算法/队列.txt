@@ -1,0 +1,84 @@
+队列是遵循先进先出(FIFO)原则的一组有序的想。队列的尾部添加新元素，并从顶部移除元素。
+function Queue(){
+	var items = [];
+	// 添加元素
+	this.enqueue = function(ele){
+		items.push(ele);
+	}
+	// 移除并返回队列中的第一个元素
+	this.dequeue = function(){
+		return items.shift();
+	}
+	// 返回队列中第一个元素
+	this.front = function(){
+		return items[0]
+	}
+	this.isEmpty = function(){
+		return items.length < 1;
+	}
+	this.clear = function(){
+		items = [];
+	}
+	this.size = function(){
+		return items.length;
+	}
+}
+
+// 优先级队列
+function PriorityQueue(){
+	var items = [];
+	
+	function QueueElement(ele,priority){
+		this.element = ele;
+		this.priority = priority;
+	}
+	
+	this.enqueue = function(ele,priority){
+		var queueEle = new QueueElement(ele,priority);
+		//var _index = //items.findIndex(e=>e.priority>queueEle.priority)
+		//if(_index < 0){
+		//	items.push(queueEle)
+		//} else {
+		//	items.splice(_index,0,queueEle)
+		//}
+		// 注释的代码可以代替下面代码
+		if(items.length<1){
+			items.push(queueEle);
+		} else {
+			var added = false;
+			for(var i=0;i<items.length;i++){
+				if(queueEle.priority < items[i].priority){
+					items.splice(i,0,queueEle);
+					added = true;
+					break;
+				}
+			}
+			if(!added){
+				items.push(queueEle)
+			}
+		}
+		
+	}
+}
+
+// 循环队列
+function hotPotato(names,num){
+	var queue = new Queue();
+	for(var i=0;i<names.length;i++){
+		queue.enqueue(names[i]); // 将数据加入队列
+	}
+	var eliminated = '';
+	while(queue.size() > 1){
+		for(var i=0; i < num; i++){
+			queue.enqueue(queue.dequeue());
+		}
+		eliminated = queue.dequeue();
+		console.log('淘汰-->' + eliminated);
+	}
+	return queue.dequeue();
+}
+
+var names = ['A','B','C','D','E'];
+var winner = hotPotato(names, 7);
+console.log('winner-->' + winner);
+	

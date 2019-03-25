@@ -1,0 +1,40 @@
+栈是一种遵从后进先出(LIFO)原则的有序集合。新添加的或待删除的元素都保存在栈的末尾，称作栈顶，另一端叫栈底。在栈里，新元素都靠近栈顶，旧元素都接近栈底。
+function Stack(){
+	var items = [];
+	// 添加元素
+	this.push = function(ele){
+		items.push(ele);
+	}
+	// 移除并返回最后一个元素
+	this.pop = function(){
+		return items.pop();
+	}
+	// 返回最后一个元素
+	this.peek = function(){
+		return items[items.length - 1];
+	}
+	this.isEmpty = function(){
+		return items.length < 1;
+	}
+	this.clear = function(){
+		items = [];
+	}
+	this.size = function(){
+		return items.length;
+	}
+}
+
+// 将十进制数字转化为其他进制
+function baseConverter(num, base){
+	var res = [],
+		digits = '0123456789ABCDEF';
+	
+	while(num > 0){
+		res.unshift(num % base);
+		num = Math.floor(num / base);
+	}
+			
+	return res.map(function(item){
+		return digits[item]
+	}).join('');
+}
