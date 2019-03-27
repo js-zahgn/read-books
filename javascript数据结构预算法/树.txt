@@ -172,36 +172,106 @@ class Node {
 	this.right = null
   }
 }
-//创建二叉搜索树(BST)）
-class BinarySearchTree {
+//创建平衡二叉搜索树(avl树)
+class AVLTree {
   constructor() {
 	this.root = null
   }
+  getNodeHeight(node){
+	if(node === null) return 0;
+	else{
+		const leftHeight = this.getNodeHeight(node.left);
+		const rightHeight = this.getNodeHeight(node.right);
+		// 返回左子树、右子树中最大高度
+		return (leftHeight>rightHeight?leftHeight:rightHeight)+1;
+	}
+  }
+  
+  // 平衡树结构
+  balance(node){
+	if(node === null) return node;
+	
+	// 左单旋
+	const _rotateLeft = (avlNode)=>{
+		let node = avlNode.right; // 保存avlNode右子节点
+		// 将avlNode的右子节点指向node(原avlNode的右子节点)的左子节点
+		avlNode.right = node.left; 
+		node.left = avlNode; // 将node的左子节点指向node
+		return node; // 返回node取代原来的avlNode
+	}
+	
+	// 右单旋
+	const _rotateRight = (avlNode)=>{
+		let node = avlNode.left;
+		avlNode.left = node.right;
+		node.right = avlNode;
+		return node;
+	}
+	
+	// 左-右双旋
+	const _rotateLeftRight = (avlNode)=>{
+		avlNode.left = _rotateLeft(avlNode.left); // 先对左子节点进行左单旋
+		return _rotateRight(avlNode); // 再对avlNode进行右单旋
+	}
+	
+	// 右-左双旋
+	const _rotateRightLeft = (avlNode)=>{
+		avlNode.right = _rotateRight(avlNode.right);
+		return _rotateLeft(avlNode);
+	}
+	
+	// 当左子树比右子树高1以上
+	if(this.getNodeHeight(node.left) - this.getNodeHeight(node.right) > 1){
+		// 左子树的左子树高度不小于左子树的右子树高度
+		if(this.getNodeHeight(node.left.left) >=this.getNodeHeight(node.left.right)){
+			// 直接进行右单旋
+			node = _rotateRight(node);
+		} else {
+			// 左子树的右子树高度大于左子树的左子树
+			node = _rotateLeftRight(node);
+		}
+		// 右子树高度比左子树高度高1以上
+	} else if(this.getNodeHeight(node.right) - this.getNodeHeight(node.left) > 1){
+		// 当右子树的右子树高度不小于右子树的左子树
+	  if(this.getNodeHeight(node.right.right)>=this.getNodeHeight(node.right.right)){
+		// 进行左单旋
+		node = _rotateLeft(node);
+	  } else {
+		node = _rotateRightLeft(node);
+	  }
+	}
+	
+	return node;
+  }
+
   //插入节点
   insert(key) {
-	const newNode = new Node(key);
-	const insertNode = (node, newNode) => {
-	  if (newNode.key < node.key) {
+	const _insertNode = (node, newNode) => {
+	  if(node === null){
+		node = newNode;
+		return node;
+	  } else if (newNode.key < node.key) {
 		if (node.left === null) {
-		  node.left = newNode
+		  node.left = newNode;
+		  return node;
 		} else {
-		  insertNode(node.left, newNode)
+		  node.left = _insertNode(node.left, newNode);
+		  // 平衡树
+		  node = this.balance(node);
 		}
 	  } else {
 		if (node.right === null) {
-		  node.right = newNode
+		  node.right = newNode；
+		  return node;
 		} else {
-		  insertNode(node.right, newNode)
+		  node.right = _insertNode(node.right, newNode);
+		  node = this.balance(node);
 		}
-
 	  }
+	  return node;
 	};
-	if (!this.root) {
-	  this.root = newNode
-	} else {
-	  insertNode(this.root, newNode)
-
-	}
+	const newNode = new Node(key);
+	this.root = _insertNode(this.root, newNode);
   }
   //中序遍历
   inOrder() {
@@ -280,28 +350,160 @@ class BinarySearchTree {
   }
   //删除节点
   remove(key) {
-	const removeNode = (node, key) => {
+	const _removeNode = (node, key) => {
 	  if (node === null) return null;
-	  if (node.key === key) {
+	  if (key < node.key) {
+		node.left = _removeNode(node.left, key);
+		node = this.balance(node);
+		return node;
+	  } else if(key > node.key){
+		node.right = _removeNode(node.right, key);
+		node = this.balance(node);
+		return node;
+	  } else {
 		if (node.left === null && node.right === null) return null;
 		if (node.left === null) return node.right;
 		if (node.right === null) return node.left;
 		if (node.left !== null && node.right !== null) {
 		  let _node = this.getMin(node.right);
 		  node.key = _node.key;
-		  node.right = removeNode(node.right, key);
-		  return node
+		  node.right = _removeNode(node.right, key);
+		  node = this.balance(node);
+		  return node;
 		}
-	  } else if (key < node.key) {
-		node.left = removeNode(node.left, key);
-		return node
-	  } else {
-		node.right = removeNode(node.right, key);
-		return node
 	  }
 	};
-	return removeNode(this.root, key)
+	return _removeNode(this.root, key);
   }
 }
 
-典型二叉平衡树：AVL(自平衡)二叉树，红黑树...
+典型二叉平衡树：AVL(自平衡)二叉查找树，红黑树...
+AVL树：任何节点的两个子树的高度差最大为1，AVL树的查找、插入和删除在平均和最坏情况下都是O(logn)。在AVL树中进行插入和删除节点后，可能导致AVL树失去平衡。数去平衡的节点需要成为根节点才能解决问题。不管执行插入和删除，只要不满足平衡条件，就要通过旋转来保持平衡，旋转是很耗时的，因此AVL树结构适合用于查找多，增删次数少的情况。
+
+红黑树：不是高度平衡的，插入最多旋转两次，删除最多旋转三次。适合操作操作多的场景。
+ 1、每个节点都是红色或者黑色
+ 2、根节点是黑色
+ 3、每个叶节点都是黑色(为null的子节点)
+ 4、如果一个节点是红色，则他的两个子节点都是黑色
+ 5、对每个节点，从该节点到期所有后代叶节点的简单路径上，均包含相同数目的黑色节点。
+ ***一棵含有n个节点的红黑树的高度至多为2log(n+1)***
+ ***高度为h的红黑树，它的包含的内节点个数至少为 2h/2-1个***
+ ***红黑树的增查删的时间复杂度最坏为O(log n)***
+ 
+	let Colors = {
+	  RED: 0,
+	  BLACK: 1
+	};
+
+	class Node {
+	  constructor(key, color) {
+		this.key = key;
+		this.left = null;
+		this.right = null;
+		this.color = color;
+
+		this.flipColor = function () {
+		  if (this.color === Colors.RED) {
+			this.color = Colors.BLACK;
+		  } else {
+			this.color = Colors.RED;
+		  }
+		};
+	  }
+	}
+
+	class RedBlackTree {
+	  constructor() {
+		this.root = null;
+	  }
+
+	  isRed(node) {
+		if (!node) {
+		  return false;
+		}
+		return node.color === Colors.RED;
+	  }
+
+	  rotateLeft(node) {
+		let temp = node.right;
+		if (temp !== null) {
+		  node.right = temp.left;
+		  temp.left = node;
+		  temp.color = node.color;
+		  node.color = Colors.RED;
+		}
+		return temp;
+	  }
+
+	  rotateRight(node) {
+		let temp = node.left;
+		if (temp !== null) {
+		  node.left = temp.right;
+		  temp.right = node;
+		  temp.color = node.color;
+		  node.color = Colors.RED;
+		}
+		return temp;
+	  }
+
+	  insertNode(node, element) {
+
+		if (node === null) {
+		  return new Node(element, Colors.RED);
+		}
+
+		let newRoot = node;
+
+		if (element < node.key) {
+
+		  node.left = this.insertNode(node.left, element);
+
+		} else if (element > node.key) {
+
+		  node.right = this.insertNode(node.right, element);
+
+		} else {
+		  node.key = element;
+		}
+
+		if (this.isRed(node.right) && !this.isRed(node.left)) {
+		  newRoot = this.rotateLeft(node);
+		}
+
+		if (this.isRed(node.left) && this.isRed(node.left.left)) {
+		  newRoot = this.rotateRight(node);
+		}
+		if (this.isRed(node.left) && this.isRed(node.right)) {
+		  node.left.flipColor();
+		  node.right.flipColor();
+		}
+
+		return newRoot;
+	  }
+
+	  insert(element) {
+		this.root = this.insertNode(this.root, element);
+		this.root.color = Colors.BLACK;
+	  }
+	}
+
+
+ B-Tree ：主要用于文件系统以及部分数据库索引，如MongoDB
+ B+Tree : 主要用于关系型数据库索引
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
