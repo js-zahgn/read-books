@@ -23,6 +23,17 @@
           可以使用二维数组来表示两者之间的连通性。
 		  常用于边的数量比顶点多的情况，节省空间和内存。
 
+图的遍历：
+1、广度优先搜索：Breadth-First Search, BFS
+                 通过将顶点存入队列中，最先进入队列的顶点先被探索。
+2、深度优先搜索：Depth-First Search, DFS
+                 通过将顶点存入栈中，顶点是沿着路径被探索的，存在新的相邻顶点就去访问。
+
+    白色---该顶点未被访问
+	灰色---该顶点已被访问过，但未被探索
+	黑色---该顶点被访问且被完全探索过
+
+
 // 邻接表		  
 function Graph(){
 	var vertices = []; // 用来存储所有顶点的名字
@@ -44,6 +55,36 @@ function Graph(){
 		var res = '';
 		vertices.reduce((res,cur)=>{},'')
 	}
+	var initColor = function(){
+		var color = [];
+		for(var i=0;i<vertices.length;i++){
+			color[vertices[i]] = 'white';
+		}
+		return color;
+	}
+	// 广度优先
+	this.bfs = function(v, cb){
+		var color = initColor(),
+			queue = new Queue();
+		queue.enqueue(v);
+		
+		while(!queue.isEmpty()){
+			var u = queue.dequeue(),
+				neighbors = adjList[u];
+			color[u] = 'grey';
+			for(var i=0;i<neighbors.length;i++){
+				var w = neighbors[i];
+				if(color[w]==='white'){
+					color[w] = 'grey';
+					queue.enqueue(w);
+				}
+			}
+			color[u] = 'black';
+			if(cb){
+				cb(u);
+			}
+		}
+	}
 }
 
 var graph = new Graph();
@@ -61,6 +102,36 @@ graph.addEdge('D','H');
 graph.addEdge('B','E');
 graph.addEdge('B','F');
 graph.addEdge('E','I');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
